@@ -1,3 +1,5 @@
+[![GitHub release](https://img.shields.io/github/release/UnitVectorY-Labs/mcp-acronym-lookup.svg)](https://github.com/UnitVectorY-Labs/mcp-acronym-lookup/releases/latest) [![License](https://img.shields.io/badge/license-MIT-blue)](https://opensource.org/licenses/MIT) [![Active](https://img.shields.io/badge/Status-Active-green)](https://guide.unitvectorylabs.com/bestpractices/status/#active) [![Go Report Card](https://goreportcard.com/badge/github.com/UnitVectorY-Labs/mcp-acronym-lookup)](https://goreportcard.com/report/github.com/UnitVectorY-Labs/mcp-acronym-lookup)
+
 # mcp-acronym-lookup
 A lightweight, configuration-driven MCP server that ingests a CSV of acronyms and initialisms to expose a lookup tool for their full meanings and descriptions.
 
