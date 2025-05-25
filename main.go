@@ -95,14 +95,15 @@ func main() {
 		mcp.WithString("acronym", mcp.Description("The acronym or initialism to resolve."), mcp.Required()),
 	)
 	srv.AddTool(tool, func(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-		val, ok := req.Params.Arguments["acronym"].(string)
+		args := req.GetArguments()
+		acronym, ok := args["acronym"].(string)
 		if !ok {
 			return mcp.NewToolResultError("invalid or missing 'acronym' parameter"), nil
 		}
-		key := sanitizeKey(val)
+		key := sanitizeKey(acronym)
 		matches, found := entries[key]
 		if !found || len(matches) == 0 {
-			return mcp.NewToolResultError(fmt.Sprintf("no entry found for '%s'", val)), nil
+			return mcp.NewToolResultError(fmt.Sprintf("no entry found for '%s'", acronym)), nil
 		}
 		// Prepare response
 		resp := map[string]interface{}{
