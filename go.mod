@@ -2,7 +2,7 @@ module github.com/UnitVectorY-Labs/mcp-acronym-lookup
 
 go 1.24.3 // GOVERSION
 
-require github.com/mark3labs/mcp-go v0.29.0
+require github.com/mark3labs/mcp-go v0.31.0
 
 require (
 	github.com/google/uuid v1.6.0 // indirect
