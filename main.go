@@ -24,6 +24,8 @@ type AcronymEntry struct {
 
 var nonAlpha = regexp.MustCompile("[^A-Za-z]+")
 
+var Version = "dev" // This will be set by the build systems to the release version
+
 // sanitizeKey removes non-alphabetic characters and lowercases the string
 func sanitizeKey(s string) string {
 	s = nonAlpha.ReplaceAllString(s, "")
@@ -86,7 +88,7 @@ func main() {
 	}
 
 	// Initialize MCP server with fixed name and version
-	srv := server.NewMCPServer("mcp-acronym-lookup", "0.1.0")
+	srv := server.NewMCPServer("mcp-acronym-lookup", Version)
 
 	// Register lookup tool
 	tool := mcp.NewTool(
