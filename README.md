@@ -7,6 +7,10 @@ A lightweight, configuration-driven MCP server that ingests a CSV of acronyms an
 
 `mcp-acronym-lookup` lets you turn any simple three‑column CSV file of abbreviations into an MCP server whose single tool can resolve those acronyms or initialisms, returning all matching definitions in JSON to your agent.
 
+## Releases
+
+All official versions of **mcp-acronym-lookup** are published on [GitHub Releases](https://github.com/UnitVectorY-Labs/mcp-acronym-lookup/releases). Since this MCP server is written in Go, each release provides pre-compiled executables for macOS, Linux, and Windows—ready to download and run.
+
 ## Configuration
 
 This server is configured using one environment variable and an optional command-line flag:
