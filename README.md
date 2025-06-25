@@ -11,6 +11,12 @@ A lightweight, configuration-driven MCP server that ingests a CSV of acronyms an
 
 All official versions of **mcp-acronym-lookup** are published on [GitHub Releases](https://github.com/UnitVectorY-Labs/mcp-acronym-lookup/releases). Since this MCP server is written in Go, each release provides pre-compiled executables for macOS, Linux, and Windows—ready to download and run.
 
+Alternatively, if you have Go installed, you can install **mcp-acronym-lookup** directly from source using the following command:
+
+```bash
+go install github.com/UnitVectorY-Labs/mcp-acronym-lookup@latest
+```
+
 ## Configuration
 
 This server is configured using one environment variable and an optional command-line flag:
