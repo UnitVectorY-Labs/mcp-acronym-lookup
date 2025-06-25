@@ -94,6 +94,8 @@ func main() {
 	tool := mcp.NewTool(
 		"lookupAcronym",
 		mcp.WithDescription("Resolve an acronym or initialism to its full form(s) and description(s)."),
+		mcp.WithTitleAnnotation("Lookup Acronym"),
+		mcp.WithReadOnlyHintAnnotation(true),
 		mcp.WithString("acronym", mcp.Description("The acronym or initialism to resolve."), mcp.Required()),
 	)
 	srv.AddTool(tool, func(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
