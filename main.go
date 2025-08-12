@@ -7,7 +7,6 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"net/http"
 	"os"
 	"regexp"
 	"strings"
@@ -68,9 +67,9 @@ func loadCSV(path string) (map[string][]AcronymEntry, error) {
 }
 
 func main() {
-	// CLI flag for SSE/HTTP mode
-	var sseAddr string
-	flag.StringVar(&sseAddr, "sse", "", "run in SSE (HTTP/SSE) mode on the given address, e.g. :8080")
+	// CLI flag for Streamable HTTP transport
+	var httpAddr string
+	flag.StringVar(&httpAddr, "http", "", "run in Streamable HTTP transport on the given address, e.g. :8080")
 	flag.Parse()
 
 	// Path to CSV file from environment
@@ -121,28 +120,21 @@ func main() {
 		return mcp.NewToolResultText(string(data)), nil
 	})
 
-	// Choose mode
-	if sseAddr != "" {
-		fmt.Printf("Starting MCP server in SSE mode on %s\n", sseAddr)
-		sseSrv := server.NewSSEServer(
-			srv,
-			server.WithStaticBasePath("/"),
-			server.WithSSEEndpoint("/mcp/sse"),
-			server.WithMessageEndpoint("/mcp/message"),
-		)
-		mux := http.NewServeMux()
-		mux.Handle("/", sseSrv)
+	// Choose transport mode
+	if httpAddr != "" {
+		fmt.Printf("Starting MCP server using Streamable HTTP transport on %s\n", httpAddr)
 
-		fmt.Printf("SSE Endpoint: %s\n", sseSrv.CompleteSsePath())
-		fmt.Printf("Message Endpoint: %s\n", sseSrv.CompleteMessagePath())
+		// Create HTTP server
+		httpServer := server.NewStreamableHTTPServer(srv)
 
-		httpSrv := &http.Server{
-			Addr:    sseAddr,
-			Handler: mux,
+		fmt.Printf("Streamable HTTP Endpoint: http://localhost:%s/mcp\n", httpAddr)
+
+		// Start the server
+		if err := httpServer.Start(":" + httpAddr); err != nil {
+			log.Fatalf("Streamable HTTP server failed to start: %v", err)
 		}
-		log.Fatal(httpSrv.ListenAndServe())
 	} else {
-		// stdio mode
+		// stdio mode by default
 		if err := server.ServeStdio(srv); err != nil {
 			log.Fatalf("Fatal: MCP server terminated: %v\n", err)
 		}

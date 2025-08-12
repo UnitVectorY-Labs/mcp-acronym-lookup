@@ -27,7 +27,7 @@ This server is configured using one environment variable and an optional command
 
 ### Command‑Line Flags
 
-* `--sse <addr>`: Run in SSE (HTTP/SSE) mode on the given address (for example, `:8080`). If omitted, the server runs in standard I/O mode.
+* `--http <addr>`: Run in Streamable HTTP transport on the given address (for example, `:8080`). If omitted, the server runs in standard I/O mode (recommended by the MCP specification).
 
 ## CSV Format
 
@@ -40,12 +40,11 @@ ASAP,As Soon As Possible,Commonly used to express urgency in completing a task o
 DIY,Do It Yourself,Refers to the practice of creating or repairing things without professional help.
 ```
 
-### Run in SSE Mode
+### Run in Streamable HTTP Transport
 
-By default the server runs in stdio mode, but if you want to run in SSE mode, you can specify the `--sse` command line flag specifying the server name and port (ex: localhost:8080).  This will run with the following endpoints that your MCP client can connect to:
+To run as an MCP HTTP server, use the `--http <addr>` flag (e.g., `--http :8080`). If not specified, the server defaults to stdio.
 
-- SSE Endpoint: /mcp/sse
-- Message Endpoint: /mcp/message
+The MCP server can then be accessed at the following endpoint: `http://localhost:<port>/mcp`
 
 ## Limitations
 
