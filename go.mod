@@ -2,7 +2,7 @@ module github.com/UnitVectorY-Labs/mcp-acronym-lookup
 
 go 1.25.1 // GOVERSION
 
-require github.com/mark3labs/mcp-go v0.40.0
+require github.com/mark3labs/mcp-go v0.41.1
 
 require (
 	github.com/bahlo/generic-list-go v0.2.0 // indirect
