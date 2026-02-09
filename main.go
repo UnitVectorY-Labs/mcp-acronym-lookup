@@ -9,6 +9,7 @@ import (
 	"log"
 	"os"
 	"regexp"
+	"runtime/debug"
 	"strings"
 
 	"github.com/mark3labs/mcp-go/mcp"
@@ -67,6 +68,15 @@ func loadCSV(path string) (map[string][]AcronymEntry, error) {
 }
 
 func main() {
+	// Set the build version from the build info if not set by the build system
+	if Version == "dev" || Version == "" {
+		if bi, ok := debug.ReadBuildInfo(); ok {
+			if bi.Main.Version != "" && bi.Main.Version != "(devel)" {
+				Version = bi.Main.Version
+			}
+		}
+	}
+
 	// CLI flag for Streamable HTTP transport
 	var httpAddr string
 	flag.StringVar(&httpAddr, "http", "", "run in Streamable HTTP transport on the given address, e.g. :8080")
