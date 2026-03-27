@@ -1,0 +1,11 @@
+name: mcp-acronym-lookup
+default_branch: main
+config:
+  description: "A lightweight, configuration-driven MCP server that ingests a CSV of acronyms and initialisms to expose a lookup tool for their full meanings and descriptions."
+  license: MIT
+  language: go
+  release: release-go
+  justfile: true
+  codecov: true
+  docs:
+    enabled: false
