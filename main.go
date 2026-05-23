@@ -9,6 +9,7 @@ import (
 	"log"
 	"os"
 	"regexp"
+	"runtime"
 	"runtime/debug"
 	"strings"
 
@@ -25,6 +26,16 @@ type AcronymEntry struct {
 var nonAlpha = regexp.MustCompile("[^A-Za-z]+")
 
 var Version = "dev" // This will be set by the build systems to the release version
+
+var semverRe = regexp.MustCompile(`^\d+\.\d+\.\d+`)
+
+func buildVersionOutput(version string) string {
+	normalized := version
+	if semverRe.MatchString(normalized) && !strings.HasPrefix(normalized, "v") {
+		normalized = "v" + normalized
+	}
+	return fmt.Sprintf("%s (%s, %s/%s)", normalized, runtime.Version(), runtime.GOOS, runtime.GOARCH)
+}
 
 // sanitizeKey removes non-alphabetic characters and lowercases the string
 func sanitizeKey(s string) string {
@@ -80,7 +91,14 @@ func main() {
 	// CLI flag for Streamable HTTP transport
 	var httpAddr string
 	flag.StringVar(&httpAddr, "http", "", "run in Streamable HTTP transport on the given address, e.g. :8080")
+	var showVersion bool
+	flag.BoolVar(&showVersion, "version", false, "print version and exit")
 	flag.Parse()
+
+	if showVersion {
+		fmt.Printf("mcp-acronym-lookup version %s\n", buildVersionOutput(Version))
+		os.Exit(0)
+	}
 
 	// Path to CSV file from environment
 	csvPath := os.Getenv("ACRONYM_FILE")
