@@ -137,7 +137,7 @@ func main() {
 			return mcp.NewToolResultError(fmt.Sprintf("no entry found for '%s'", acronym)), nil
 		}
 		// Prepare response
-		resp := map[string]interface{}{
+		resp := map[string]any{
 			"acronym":     key,
 			"definitions": matches,
 		}
