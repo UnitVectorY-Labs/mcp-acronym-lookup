@@ -139,10 +139,7 @@ func main() {
 		key := sanitizeKey(input.Acronym)
 		matches, found := entries[key]
 		if !found || len(matches) == 0 {
-			return &mcp.CallToolResult{
-				Content: []mcp.Content{&mcp.TextContent{Text: fmt.Sprintf("no entry found for '%s'", input.Acronym)}},
-				IsError: true,
-			}, LookupAcronymOutput{}, nil
+			return nil, LookupAcronymOutput{}, fmt.Errorf("no entry found for '%s'", input.Acronym)
 		}
 		return nil, LookupAcronymOutput{Acronym: key, Definitions: matches}, nil
 	})
