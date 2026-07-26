@@ -130,8 +130,11 @@ func main() {
 		Name:        "lookupAcronym",
 		Description: "Resolve an acronym or initialism to its full form(s) and description(s).",
 		Annotations: &mcp.ToolAnnotations{
-			Title:        "Lookup Acronym",
-			ReadOnlyHint: true,
+			Title:           "Lookup Acronym",
+			ReadOnlyHint:    true,
+			DestructiveHint: new(true),
+			IdempotentHint:  false,
+			OpenWorldHint:   new(true),
 		},
 	}, func(ctx context.Context, req *mcp.CallToolRequest, input LookupAcronymInput) (
 		*mcp.CallToolResult, LookupAcronymOutput, error,
