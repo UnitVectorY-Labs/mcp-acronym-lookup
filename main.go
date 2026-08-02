@@ -3,24 +3,32 @@ package main
 import (
 	"context"
 	"encoding/csv"
-	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"regexp"
 	"runtime"
 	"runtime/debug"
 	"strings"
 
-	"github.com/mark3labs/mcp-go/mcp"
-	"github.com/mark3labs/mcp-go/server"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
 // AcronymEntry represents one row in the CSV
 type AcronymEntry struct {
-	Full        string `json:"full"`
-	Description string `json:"description"`
+	Full        string `json:"full" jsonschema:"the full form of the acronym"`
+	Description string `json:"description" jsonschema:"a description of the acronym"`
+}
+
+type LookupAcronymInput struct {
+	Acronym string `json:"acronym" jsonschema:"The acronym or initialism to resolve."`
+}
+
+type LookupAcronymOutput struct {
+	Acronym     string         `json:"acronym" jsonschema:"the sanitized acronym key"`
+	Definitions []AcronymEntry `json:"definitions" jsonschema:"matching definitions"`
 }
 
 var nonAlpha = regexp.MustCompile("[^A-Za-z]+")
@@ -115,55 +123,46 @@ func main() {
 	}
 
 	// Initialize MCP server with fixed name and version
-	srv := server.NewMCPServer("mcp-acronym-lookup", Version)
+	srv := mcp.NewServer(&mcp.Implementation{Name: "mcp-acronym-lookup", Version: Version}, nil)
 
 	// Register lookup tool
-	tool := mcp.NewTool(
-		"lookupAcronym",
-		mcp.WithDescription("Resolve an acronym or initialism to its full form(s) and description(s)."),
-		mcp.WithTitleAnnotation("Lookup Acronym"),
-		mcp.WithReadOnlyHintAnnotation(true),
-		mcp.WithString("acronym", mcp.Description("The acronym or initialism to resolve."), mcp.Required()),
-	)
-	srv.AddTool(tool, func(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-		args := req.GetArguments()
-		acronym, ok := args["acronym"].(string)
-		if !ok {
-			return mcp.NewToolResultError("invalid or missing 'acronym' parameter"), nil
-		}
-		key := sanitizeKey(acronym)
+	mcp.AddTool(srv, &mcp.Tool{
+		Name:        "lookupAcronym",
+		Description: "Resolve an acronym or initialism to its full form(s) and description(s).",
+		Annotations: &mcp.ToolAnnotations{
+			Title:           "Lookup Acronym",
+			ReadOnlyHint:    true,
+			DestructiveHint: new(true),
+			IdempotentHint:  false,
+			OpenWorldHint:   new(true),
+		},
+	}, func(ctx context.Context, req *mcp.CallToolRequest, input LookupAcronymInput) (
+		*mcp.CallToolResult, LookupAcronymOutput, error,
+	) {
+		key := sanitizeKey(input.Acronym)
 		matches, found := entries[key]
 		if !found || len(matches) == 0 {
-			return mcp.NewToolResultError(fmt.Sprintf("no entry found for '%s'", acronym)), nil
+			return nil, LookupAcronymOutput{}, fmt.Errorf("no entry found for '%s'", input.Acronym)
 		}
-		// Prepare response
-		resp := map[string]any{
-			"acronym":     key,
-			"definitions": matches,
-		}
-		data, err := json.Marshal(resp)
-		if err != nil {
-			return mcp.NewToolResultErrorFromErr("failed to encode response", err), nil
-		}
-		return mcp.NewToolResultText(string(data)), nil
+		return nil, LookupAcronymOutput{Acronym: key, Definitions: matches}, nil
 	})
 
 	// Choose transport mode
 	if httpAddr != "" {
 		fmt.Printf("Starting MCP server using Streamable HTTP transport on %s\n", httpAddr)
-
-		// Create HTTP server
-		httpServer := server.NewStreamableHTTPServer(srv)
-
 		fmt.Printf("Streamable HTTP Endpoint: http://localhost:%s/mcp\n", httpAddr)
 
+		handler := mcp.NewStreamableHTTPHandler(func(r *http.Request) *mcp.Server {
+			return srv
+		}, &mcp.StreamableHTTPOptions{})
+
 		// Start the server
-		if err := httpServer.Start(":" + httpAddr); err != nil {
+		if err := http.ListenAndServe(":"+httpAddr, handler); err != nil {
 			log.Fatalf("Streamable HTTP server failed to start: %v", err)
 		}
 	} else {
 		// stdio mode by default
-		if err := server.ServeStdio(srv); err != nil {
+		if err := srv.Run(context.Background(), &mcp.StdioTransport{}); err != nil {
 			log.Fatalf("Fatal: MCP server terminated: %v\n", err)
 		}
 	}
