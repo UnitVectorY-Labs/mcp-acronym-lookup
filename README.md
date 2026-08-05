@@ -49,5 +49,5 @@ The MCP server can then be accessed at the following endpoint: `http://localhost
 ## Limitations
 
 * The server only supports one CSV file per instance.
-* Matches are case‑insensitive and ignore non‑alphabetic characters; input strings are sanitized before lookup.
+* Matches are case‑insensitive and ignore non‑alphanumeric characters; input strings are sanitized before lookup.
 * If multiple definitions exist for the same sanitized key, all definitions are returned in a list.
