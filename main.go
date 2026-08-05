@@ -31,7 +31,7 @@ type LookupAcronymOutput struct {
 	Definitions []AcronymEntry `json:"definitions" jsonschema:"matching definitions"`
 }
 
-var nonAlpha = regexp.MustCompile("[^A-Za-z]+")
+var nonAlphanumeric = regexp.MustCompile("[^A-Za-z0-9]+")
 
 var Version = "dev" // This will be set by the build systems to the release version
 
@@ -45,9 +45,9 @@ func buildVersionOutput(version string) string {
 	return fmt.Sprintf("%s (%s, %s/%s)", normalized, runtime.Version(), runtime.GOOS, runtime.GOARCH)
 }
 
-// sanitizeKey removes non-alphabetic characters and lowercases the string
+// sanitizeKey removes non-alphanumeric characters and lowercases the string
 func sanitizeKey(s string) string {
-	s = nonAlpha.ReplaceAllString(s, "")
+	s = nonAlphanumeric.ReplaceAllString(s, "")
 	return strings.ToLower(s)
 }
 
