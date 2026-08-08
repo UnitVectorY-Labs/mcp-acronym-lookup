@@ -154,7 +154,7 @@ func main() {
 
 		handler := mcp.NewStreamableHTTPHandler(func(r *http.Request) *mcp.Server {
 			return srv
-		}, &mcp.StreamableHTTPOptions{})
+		}, &mcp.StreamableHTTPOptions{Stateless: true})
 
 		// Start the server
 		if err := http.ListenAndServe(":"+httpAddr, handler); err != nil {
