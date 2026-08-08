@@ -32,3 +32,12 @@ func TestBuildVersionOutputNoVPrefixForDev(t *testing.T) {
 		t.Fatalf("unexpected version output: got %q, want %q", got, want)
 	}
 }
+
+func TestSanitizeKeyPreservesDigits(t *testing.T) {
+	got := sanitizeKey("K8S")
+	want := "k8s"
+
+	if got != want {
+		t.Fatalf("sanitizeKey(%q) = %q, want %q", "K8S", got, want)
+	}
+}
